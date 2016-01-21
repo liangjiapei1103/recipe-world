@@ -1,12 +1,12 @@
 // load all the things we need
-var LocalStrategy = require('passport-local').Strategy;
+// var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 // load up the user model
 var User = require('../app/models/user');
 
 // load the auth variables
-var configAuth = require('/auth');
+var configAuth = require('./auth');
 
 // expose this function to out app using moddule.exports
 module.exports = function (passport) {
@@ -35,52 +35,52 @@ module.exports = function (passport) {
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
 
-    passport.use('local-signup', new LocalStrategy({
+    // passport.use('local-signup', new LocalStrategy({
 
-    	// by default, local strategy uses username and password, we will override with email
-    	usernameField: 'email',
-    	passwordField: 'password',
-    	passReqToCallback: true // allow us to pass back the entire request to the callback
+    // 	// by default, local strategy uses username and password, we will override with email
+    // 	usernameField: 'email',
+    // 	passwordField: 'password',
+    // 	passReqToCallback: true // allow us to pass back the entire request to the callback
 
-    },
-    function (req, email, password, done) {
+    // },
+    // function (req, email, password, done) {
 
-    	// asynchronus
-    	// User.findOne wont fire unless data is sent back
-    	process.nextTick(function() {
+    // 	// asynchronus
+    // 	// User.findOne wont fire unless data is sent back
+    // 	process.nextTick(function() {
 
-    		// find a user whose email is the same as the forms email
-    		// we are checking to see if the user trying to login already exists
-    		User.findOne({ 'local.email': email }, function (err, user) {
+    // 		// find a user whose email is the same as the forms email
+    // 		// we are checking to see if the user trying to login already exists
+    // 		User.findOne({ 'local.email': email }, function (err, user) {
 
-    			// if there are any errors, return the error
-                if (err)
-                    return done(err);
+    // 			// if there are any errors, return the error
+    //             if (err)
+    //                 return done(err);
 
-                // check to see if theres already a user with that email
-                if (user) {
-                   return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-                } else {
+    //             // check to see if theres already a user with that email
+    //             if (user) {
+    //                return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+    //             } else {
 
-                    // if there is no user with that email
-                    // create the user
-                    var newUser = new User();
+    //                 // if there is no user with that email
+    //                 // create the user
+    //                 var newUser = new User();
 
-                    // set the user's local credentials
-                    newUser.local.email = email;
-                    newUser.local.password = newUser.generateHash(password);
+    //                 // set the user's local credentials
+    //                 newUser.local.email = email;
+    //                 newUser.local.password = newUser.generateHash(password);
 
-                    // save the user
-                    newUser.save(function (err) {
-                        if (err)
-                            throw err;
-                        return done(null, newUser);
-                    });                    
-                }    
+    //                 // save the user
+    //                 newUser.save(function (err) {
+    //                     if (err)
+    //                         throw err;
+    //                     return done(null, newUser);
+    //                 });                    
+    //             }    
 
-    		});
-    	});
-    }));
+    // 		});
+    // 	});
+    // }));
 
     // =========================================================================
     // LOCAL LOGIN =============================================================
@@ -88,45 +88,46 @@ module.exports = function (passport) {
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
 
-    passport.use('local-login', new LocalStrategy({
+    // passport.use('local-login', new LocalStrategy({
 
 
 
-        // by default, local strategy uses username and password, we will override with email
-        usernameField : 'email',
-        passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
-    },
-    function(req, email, password, done) { // callback with email and password from our form
-        // we are checking to see if the user trying to login already exists
-        User.findOne({ 'local.email': email }, function (err, user) {
+    //     // by default, local strategy uses username and password, we will override with email
+    //     usernameField : 'email',
+    //     passwordField : 'password',
+    //     passReqToCallback : true // allows us to pass back the entire request to the callback
+    // },
+    // function(req, email, password, done) { // callback with email and password from our form
+    //     // we are checking to see if the user trying to login already exists
+    //     User.findOne({ 'local.email': email }, function (err, user) {
 
-            // if there are any errors, return the error before anything else
-            if (err) 
-                return done(err);
+    //         // if there are any errors, return the error before anything else
+    //         if (err) 
+    //             return done(err);
 
-            // if no user is found, return the message
-            // req.flash is the way to set flash data using connect-flash
-            if (!user)
-                return done(null, false, req.flash('loginMessage', 'No user found.'));
+    //         // if no user is found, return the message
+    //         // req.flash is the way to set flash data using connect-flash
+    //         if (!user)
+    //             return done(null, false, req.flash('loginMessage', 'No user found.'));
 
-            // if the user is found but the password is wrong
-            if (!user.validPassword(password))
-                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+    //         // if the user is found but the password is wrong
+    //         if (!user.validPassword(password))
+    //             return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
 
-            // all is well, return successful user
-            return done(null, user);
+    //         // all is well, return successful user
+    //         return done(null, user);
 
-        });
+    //     });
 
-    }));
+    // }));
 
     passport.use(new FacebookStrategy({
 
         // pull in our app id and secret from our auth.js file
         clientID : configAuth.facebookAuth.clientID,
-        clientSecret : configure.facebookAuth.clientSecret,
-        callbackURL : configAuth.facebookAuth.callbackURL
+        clientSecret : configAuth.facebookAuth.clientSecret,
+        callbackURL : configAuth.facebookAuth.callbackURL,
+        profileFields: ['email', 'displayName', 'photos', 'gender', 'birthday']
 
     },
 
@@ -154,9 +155,11 @@ module.exports = function (passport) {
                     // set all of the facebook information in our user model
                     newUser.facebook.id = profile.id; // set the users facebook id                   
                     newUser.facebook.token = token; // we will save the token that facebook provides to the user                    
-                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                     newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-
+                    newUser.facebook.name = profile.displayName;
+                    newUser.facebook.picture = profile.photos[0].value;
+                    newUser.facebook.gender = profile.gender;
+                    
                     // save our user to the database
                     newUser.save(function(err) {
                         if (err)
